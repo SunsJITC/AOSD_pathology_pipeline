@@ -1,0 +1,55 @@
+run:
+  workdir: "/Users/yatedisihao/Desktop/AOSD"   # 改成你的输出目录
+  seed: 0
+
+data:
+  wsi_glob: "/Users/yatedisihao/Desktop/AOSD/*.tif"         # 你的WSI路径模式
+  clinic_xlsx: "/Users/yatedisihao/Desktop/AOSD/clinic.xlsx" # 第一列ID, 第二列event(1/0), 第三列时间(月)
+  id_from_filename: true
+
+split:
+  train_ratio: 0.6
+  val_ratio: 0.2
+  test_ratio: 0.2
+  stratify_by_event: true
+
+tiling:
+  patch_size: 384
+  overlap: 0
+  min_tissue_percent: 0.5
+  blur_var_th: 60
+  max_tiles_per_wsi: 6000
+  thumbnail_size: 2048
+
+stain:
+  method: "macenko"
+  ref_image_path: ""
+
+encoder:
+  kind: "dinov2_vitb14"          # 也可换成 clip_vitb32/retccl_resnet50/uni_vitb16/simclr_resnet50/jit
+  weights_path: ""               # 需提供对应模型权重 .pth/.pt
+  embed_dim: 2048                # 请按所选模型的输出维度调整
+  input_size: 224                # 如 CLIP ViT-L/14 用 224，特殊模型按预处理要求修改
+  batch_size: 128
+
+features:
+  pca_dim: 128
+
+mil:
+  hidden: 512
+  dropout: 0.25
+  lr: 1.0e-4
+  weight_decay: 1.0e-4
+  epochs: 20
+  early_stop: 5
+  bag_size_train: 4000
+  bag_strategy: "uniform"        # ["uniform", "topk"]
+
+survival:
+  penalizer: 0.01
+  time_points: [6, 12, 24]
+  cutoff_strategy: "max_logrank" # 验证集上最大 log-rank 选阈值
+  cutoff_time: 12.0
+
+plots:
+  dpi: 150
