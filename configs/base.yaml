@@ -1,1 +1,66 @@
 
+run:
+  workdir: "/xx/xxx/xxx/xxxx"
+  seed: 42
+
+
+tiling:
+  patch_size: 256
+  overlap: 0
+  read_level: 0         # WSI pyramid level to read (0 = highest resolution; use >0 for downsampled if memory-constrained)
+  min_tissue_percent: 0.5
+  blur_var_th: 60.0
+  max_tiles_per_wsi: 6000
+  thumbnail_size: 2048
+
+stain:
+  method: "macenko"     # 仅有 macenko / none
+
+encoder:
+  # ===== 仅保留一个激活配置，其余注释 =====
+  # [ACTIVE] DINOv2-L (本地权重 + config.json)
+  kind: "dinov2-large"
+  ckpt_root: "/home/u12518354/jupyterlab/CODE/ckpts"
+  ckpt_filename: "pytorch_model.bin"
+  weights_path: "/home/u12518354/jupyterlab/CODE/ckpts/dinov2/pytorch_model.bin"
+  batch_size: 16
+  input_size: 224
+  embed_dim: 1024         # DINOv2-L CLS dim
+  norm_mean: [0.485, 0.456, 0.406]
+  norm_std:  [0.229, 0.224, 0.225]
+  #
+  # [ALT] UNI2-h
+  # kind: "uni2-h"
+  # weights_path: "/home/u12518354/jupyterlab/CODE/ckpts/uni2-h/pytorch_model.bin"
+  # embed_dim: 1536
+  #
+  # [ALT] Prov-GigaPath
+  # kind: "prov-gigapath"
+  # weights_path: "/home/u12518354/jupyterlab/CODE/ckpts/prov-gigapath/pytorch_model.bin"
+  # embed_dim: 1536
+  #
+  # [ALT] Virchow2
+  # kind: "Virchow2"
+  # weights_path: "/home/u12518354/jupyterlab/CODE/ckpts/Virchow2/pytorch_model.bin"
+  # embed_dim: 1280
+
+mil:
+  arch: "gated_attn"         # gated_attn (recommended) / attn
+  hidden: 256
+  dropout: 0.25
+  bag_size_train: 4000
+  bag_strategy: "uniform"     # uniform / random
+  epochs: 10
+  lr: 1.0e-4
+  weight_decay: 1.0e-4
+  early_stop: 10
+  stability_weight: 1.0e-3    # λ for ||z||^2 regularizer
+  cox_l2: 1.0e-4              # L2 on Cox risk head
+
+features:
+  pca_dim: 64
+  pca_dim_grid: [32, 64, 128]
+
+survival:
+  penalizer: 10
+
